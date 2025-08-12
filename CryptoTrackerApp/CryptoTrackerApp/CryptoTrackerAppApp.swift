@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct CryptoTrackerAppApp: App {
+    @State private var networkMonitor = NetworkMonitor()
+    
     init() {
         Resolver.register(NetworkService() as NetworkServiceType)
         Resolver.register(CryptoListRepo() as CryptoListProtocol)
@@ -18,6 +20,7 @@ struct CryptoTrackerAppApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(networkMonitor)
         }
     }
 }

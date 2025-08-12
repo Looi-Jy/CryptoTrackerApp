@@ -27,8 +27,10 @@ struct CryptoListView: View {
             
             Spacer()
             
-            Text(String(format: "%.5f", item.currentPrice ?? 0))
-            Text(String(format: "%.5f", item.priceChangePercentage24H ?? 0) + "%")
+            Text(item.currentPrice ?? 0, format: .currency(code: "USD"))
+            let priceChange = item.priceChangePercentage24H ?? 0
+            Text(String(format: "%.2f", priceChange) + "%")
+                .modifier(priceChangeText(priceChange: priceChange))
         }
     }
 }

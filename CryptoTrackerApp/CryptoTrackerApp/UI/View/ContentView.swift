@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(NetworkMonitor.self) private var newtworkMonitor
     @StateObject var viewModel = CryptoListViewModel()
     @State private var searchText: String = ""
     
@@ -31,17 +32,30 @@ struct ContentView: View {
                     } else {
                         List {
                             ForEach(filterListData) { item in
-                                CryptoListView(item: item)
+                                NavigationLink(value: item) {
+                                    CryptoListView(item: item)
+                                }
                             }
+                        }
+                        .navigationDestination(for: CryptoData.self) { item in
+                            CryptoDetailView(item: item)
+                        }
+                        .navigationTitle("Crypto Tracker")
+                        .toolbar {
+                            ToolbarItem {
+                                Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
+                                    .font(.title2)
+                                    .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
+                            }
+                        }
+                        .listStyle(.grouped)
+                        .searchable(text: $searchText)
+                        .refreshable {
+                            viewModel.apply()
                         }
                     }
                 }
             }
-        }
-        .listStyle(.grouped)
-        .searchable(text: $searchText)
-        .refreshable {
-            viewModel.apply()
         }
         .onAppear {
             viewModel.apply()
@@ -50,5 +64,8 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    NavigationStack {
+        ContentView(viewModel: CryptoListViewModel())
+            .environment(NetworkMonitor())
+    }
 }
