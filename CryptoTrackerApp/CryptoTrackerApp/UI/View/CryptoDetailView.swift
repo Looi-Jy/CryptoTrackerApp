@@ -8,18 +8,26 @@ import SwiftUI
 
 struct CryptoDetailView: View {
     @Environment(NetworkMonitor.self) private var newtworkMonitor
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var favCryptos: FetchedResults<FavCrypto>
+    @State private var isFav: Bool = false
     var item: CryptoData
+    
+    init(isFavourite: Bool, item: CryptoData) {
+        _isFav = State(initialValue: isFavourite)
+        self.item = item
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center) {
                 Spacer()
-                AsyncImage(url: URL(string: item.image ?? "")) { image in
+                AsyncCachedImage(url: URL(string: item.image ?? "")) { image in
                     image
                         .resizable()
                         .scaledToFit()
                 } placeholder: {
-                    Color.gray
+                    ProgressView()
                 }
                 .frame(maxWidth: 200, maxHeight: 200)
                 Spacer()
@@ -52,9 +60,38 @@ struct CryptoDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem {
-                Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
-                    .font(.title2)
-                    .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
+                HStack {
+                    Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
+                        .font(.title2)
+                        .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
+                    
+                    Button(action: {
+                        isFav.toggle()
+                        if isFav {
+                            //add to favouriste list
+                            if let id = item.id {
+                                let fav = FavCrypto(context: moc)
+                                fav.id = id
+                                fav.name = item.name
+                                fav.symbol = item.symbol
+                                fav.dateAdded = Date()
+                                
+                                try? moc.save()
+                            }
+                        } else {
+                            //remove from favourite list
+                            if let fav = favCryptos.filter({ $0.id == item.id }).first {
+                                moc.delete(fav)
+                                
+                                try? moc.save()
+                            }
+                        }
+                    }) {
+                        Image(systemName: isFav ? "heart.fill" : "heart")
+                            .font(.title2)
+                            .foregroundColor(isFav ? .red : .primary)
+                    }
+                }
             }
         }
     }
@@ -62,7 +99,9 @@ struct CryptoDetailView: View {
 
 #Preview {
     NavigationStack {
-        CryptoDetailView(item: CryptoData(id: "bitcoin", symbol: "btc", name: "Bitcoin", image: "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png?1696501400", currentPrice: 119553, marketCap: 2381348295947, marketCapRank: 1, fullyDilutedValuation: 2381348295947, totalVolume: 54469687225, high24H: 122227, low24H: 118199, priceChange24H: 997.88, priceChangePercentage24H: 0.8417, marketCapChange24H: 21219714861, marketCapChangePercentage24H: 0.89909, circulatingSupply: 19904843.0, totalSupply: 19904843.0, maxSupply: 21000000.0, ath: 122838, athChangePercentage: -2.37301, athDate: "2025-07-14T07:56:01.937Z", atl: 67.81, atlChangePercentage: 176754.15021, atlDate: "2013-07-06T00:00:00.000Z", lastUpdated: "2025-08-11T12:59:42.122Z")).environment(NetworkMonitor())
+        CryptoDetailView(
+            isFavourite: false,
+            item: CryptoData.sampleCryptoData
+        ).environment(NetworkMonitor())
     }
-    
 }

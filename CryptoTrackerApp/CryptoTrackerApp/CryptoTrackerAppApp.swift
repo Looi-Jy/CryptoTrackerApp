@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct CryptoTrackerAppApp: App {
     @State private var networkMonitor = NetworkMonitor()
+    @StateObject private var dataController  = DataController()
     
     init() {
         Resolver.register(NetworkService() as NetworkServiceType)
@@ -21,6 +22,7 @@ struct CryptoTrackerAppApp: App {
         WindowGroup {
             ContentView()
                 .environment(networkMonitor)
+                .environment(\.managedObjectContext, dataController.container.viewContext)
         }
     }
 }

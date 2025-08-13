@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(NetworkMonitor.self) private var newtworkMonitor
+    @Environment(\.managedObjectContext) var moc
+    @FetchRequest(sortDescriptors: []) var favCryptos: FetchedResults<FavCrypto>
     @StateObject var viewModel = CryptoListViewModel()
     @State private var searchText: String = ""
     
@@ -21,6 +23,20 @@ struct ContentView: View {
         }
     }
     
+    private var filterFavListData: [CryptoData] {
+        if searchText.isEmpty {
+            return favListData
+        }
+        return favListData.filter {
+            $0.name?.localizedCaseInsensitiveContains(searchText) ?? false
+        }
+    }
+    
+    private var favListData: [CryptoData] {
+        let favId = Set(favCryptos.map { $0.id })
+        return viewModel.cryptoList.filter({ favId.contains($0.id) })
+    }
+    
     var body: some View {
         VStack {
             if viewModel.isLoading {
@@ -31,14 +47,25 @@ struct ContentView: View {
                         ContentUnavailableView("Content unavailable", systemImage: "exclamationmark.triangle.fill")
                     } else {
                         List {
-                            ForEach(filterListData) { item in
-                                NavigationLink(value: item) {
-                                    CryptoListView(item: item)
+                            if favCryptos.count > 0 {
+                                Section(header: Text("Favourite")) {
+                                    ForEach(filterFavListData) { item in
+                                        NavigationLink(value: item) {
+                                            CryptoListView(isFavourite: isFav(id: item.id ?? ""), item: item)
+                                        }
+                                    }
+                                }
+                            }
+                            Section(header: Text("Top 50")) {
+                                ForEach(filterListData) { item in
+                                    NavigationLink(value: item) {
+                                        CryptoListView(isFavourite: isFav(id: item.id ?? ""), item: item)
+                                    }
                                 }
                             }
                         }
                         .navigationDestination(for: CryptoData.self) { item in
-                            CryptoDetailView(item: item)
+                            CryptoDetailView(isFavourite: isFav(id: item.id ?? ""), item: item)
                         }
                         .navigationTitle("Crypto Tracker")
                         .toolbar {
@@ -60,6 +87,10 @@ struct ContentView: View {
         .onAppear {
             viewModel.apply()
         }
+    }
+    
+    private func isFav(id: String) -> Bool {
+        return favCryptos.filter({ $0.id == id }).first != nil
     }
 }
 

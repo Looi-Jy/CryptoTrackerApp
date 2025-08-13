@@ -11,7 +11,7 @@ struct priceChangeText: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(.title2)
+            .font(.body)
             .foregroundColor(priceChange > 0 ? Color.green : Color.red)
     }
 }
