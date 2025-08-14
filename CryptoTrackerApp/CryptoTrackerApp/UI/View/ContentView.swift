@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ContentView: View {
     @Environment(NetworkMonitor.self) private var newtworkMonitor
@@ -51,7 +52,7 @@ struct ContentView: View {
                                 Section(header: Text("Favourite")) {
                                     ForEach(filterFavListData) { item in
                                         NavigationLink(value: item) {
-                                            CryptoListView(isFavourite: isFav(id: item.id ?? ""), item: item)
+                                            CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
                                         }
                                     }
                                 }
@@ -59,13 +60,13 @@ struct ContentView: View {
                             Section(header: Text("Top 50")) {
                                 ForEach(filterListData) { item in
                                     NavigationLink(value: item) {
-                                        CryptoListView(isFavourite: isFav(id: item.id ?? ""), item: item)
+                                        CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
                                     }
                                 }
                             }
                         }
                         .navigationDestination(for: CryptoData.self) { item in
-                            CryptoDetailView(isFavourite: isFav(id: item.id ?? ""), item: item)
+                            CryptoDetailView(isFav: isFav(id: item.id ?? ""), item: item)
                         }
                         .navigationTitle("Crypto Tracker")
                         .toolbar {
@@ -86,6 +87,12 @@ struct ContentView: View {
         }
         .onAppear {
             viewModel.apply()
+        }
+        .onChange(of: newtworkMonitor.isConnected) { _, isConnected in
+            if isConnected {
+                Logger.cryptoTrack.info("Retry network request")
+                viewModel.apply()
+            }
         }
     }
     

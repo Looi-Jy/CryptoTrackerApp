@@ -38,10 +38,10 @@ final class CryptoListViewModel: ObservableObject {
         isLoading = true
         Task {
             do {
-                let cryptoList = try await self.getCryptoListUsecase.execute(request: self.request)
+                cryptoList = try await self.getCryptoListUsecase.execute(request: self.request)
                 isLoading = false
-                guard let cryptoList else { return }
-                self.cryptoList = cryptoList.data ?? []
+//                guard let cryptoList else { return }
+//                self.cryptoList = cryptoList
             } catch {
                 isLoading = false
             }

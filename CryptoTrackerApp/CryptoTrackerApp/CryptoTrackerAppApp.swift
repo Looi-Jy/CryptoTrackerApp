@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct CryptoTrackerAppApp: App {
     @State private var networkMonitor = NetworkMonitor()
-    @StateObject private var dataController  = DataController()
+    @StateObject private var dataController  = DataController.shared
     
     init() {
         Resolver.register(NetworkService() as NetworkServiceType)
