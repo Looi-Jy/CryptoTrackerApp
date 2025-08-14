@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct CryptoDetailView: View {
-    @Environment(NetworkMonitor.self) private var newtworkMonitor
+    @EnvironmentObject private var newtworkMonitor: NetworkMonitor
     var isFav: Bool
     var item: CryptoData
 
@@ -66,10 +66,10 @@ struct CryptoDetailView: View {
 }
 
 #Preview {
-    NavigationStack {
+    NavigationView {
         CryptoDetailView(
             isFav: false,
             item: CryptoData.sampleCryptoData
-        ).environment(NetworkMonitor())
+        ).environmentObject(NetworkMonitor())
     }
 }

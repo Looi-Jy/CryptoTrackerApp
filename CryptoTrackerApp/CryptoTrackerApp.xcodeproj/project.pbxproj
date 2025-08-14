@@ -29,9 +29,31 @@
 		0AD90AFE2E49D73800333B42 /* CryptoTrackerAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptoTrackerAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0AD90F0C2E4DD49A00333B42 /* Exceptions for "CryptoTrackerApp" folder in "CryptoTrackerAppTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/Controller/DataController.swift,
+				Data/CryptoTrack.xcdatamodeld,
+				Data/Network/Endpoints/CryptoListRequest.swift,
+				Data/Network/NetworkServiceModel.swift,
+				DI/Injectedable.swift,
+				Domain/Interface/CryptoListProtocol.swift,
+				Domain/Model/CryptoList.swift,
+				Domain/UseCases/FetchCryptoListUseCase.swift,
+				Domain/ViewModel/CryptoListViewModel.swift,
+				Log/Logger.swift,
+			);
+			target = 0AD90AF32E49D73800333B42 /* CryptoTrackerAppTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0AD90AE62E49D73600333B42 /* CryptoTrackerApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0AD90F0C2E4DD49A00333B42 /* Exceptions for "CryptoTrackerApp" folder in "CryptoTrackerAppTests" target */,
+			);
 			path = CryptoTrackerApp;
 			sourceTree = "<group>";
 		};
@@ -403,6 +425,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -431,6 +454,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

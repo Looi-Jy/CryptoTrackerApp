@@ -13,7 +13,7 @@
         <attribute name="symbol" optional="YES" attributeType="String"/>
         <attribute name="totalVolume" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
-    <entity name="FavCrypto" representedClassName="FavCrypto" syncable="YES" codeGenerationType="class">
+    <entity name="FavCrypto" representedClassName=".FavCrypto" syncable="YES" codeGenerationType="class">
         <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>

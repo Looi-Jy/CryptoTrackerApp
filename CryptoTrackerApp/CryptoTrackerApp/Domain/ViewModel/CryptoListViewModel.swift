@@ -6,19 +6,22 @@
 //
 import Foundation
 import Combine
+import OSLog
 
 @MainActor
 final class CryptoListViewModel: ObservableObject {
-    @Injected var getCryptoListUsecase: FetchCryptoListUseCase
+    @Injected var getCryptoListUsecase: FetchCryptoListProtocol
     private var request: CryptoListRequest = {
         return CryptoListRequest()
     }()
     
-    private lazy var networkService: NetworkService = {
-        return NetworkService()
-    }()
-    
     @Published var isLoading: Bool = false
+    
+    init() {}
+    
+    public init(useCase: FetchCryptoListProtocol) {
+        self.getCryptoListUsecase = useCase
+    }
     
     // MARK: Input
     func apply() {
@@ -28,23 +31,24 @@ final class CryptoListViewModel: ObservableObject {
             "per_page": "50",
             "page": "1"
         ]
-        self.getCryptoList()
+        
+        Task {
+            self.cryptoList = try await self.getCryptoList()
+        }
     }
     
     // MARK: Output
     @Published private(set) var cryptoList: [CryptoData] = []
     
-    private func getCryptoList() {
+    public func getCryptoList() async throws -> [CryptoData] {
         isLoading = true
-        Task {
-            do {
-                cryptoList = try await self.getCryptoListUsecase.execute(request: self.request)
-                isLoading = false
-//                guard let cryptoList else { return }
-//                self.cryptoList = cryptoList
-            } catch {
-                isLoading = false
-            }
+        do {
+            isLoading = false
+            return try await self.getCryptoListUsecase.execute(request: self.request)
+        } catch {
+            isLoading = false
+            Logger.cryptoTrack.debug("Failed to get Crypto List: \(error.localizedDescription, privacy: .private)")
+            return []
         }
     }
 }

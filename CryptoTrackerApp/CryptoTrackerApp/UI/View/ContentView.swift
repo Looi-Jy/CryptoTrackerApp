@@ -9,7 +9,7 @@ import SwiftUI
 import OSLog
 
 struct ContentView: View {
-    @Environment(NetworkMonitor.self) private var newtworkMonitor
+    @EnvironmentObject private var newtworkMonitor: NetworkMonitor
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: []) var favCryptos: FetchedResults<FavCrypto>
     @StateObject var viewModel = CryptoListViewModel()
@@ -39,58 +39,75 @@ struct ContentView: View {
     }
     
     var body: some View {
-        VStack {
-            if viewModel.isLoading {
-                ProgressView()
-            } else {
-                NavigationStack {
+        if #available(iOS 17.0, *) {
+            VStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
                     if viewModel.cryptoList.isEmpty {
                         ContentUnavailableView("Content unavailable", systemImage: "exclamationmark.triangle.fill")
                     } else {
-                        List {
-                            if favCryptos.count > 0 {
-                                Section(header: Text("Favourite")) {
-                                    ForEach(filterFavListData) { item in
+                        NavigationStack {
+                            List {
+                                if favCryptos.count > 0 {
+                                    Section(header: Text("Favourite")) {
+                                        ForEach(filterFavListData) { item in
+                                            NavigationLink(value: item) {
+                                                CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
+                                            }
+                                        }
+                                    }
+                                }
+                                Section(header: Text("Top 50")) {
+                                    ForEach(filterListData) { item in
                                         NavigationLink(value: item) {
                                             CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
                                         }
                                     }
                                 }
                             }
-                            Section(header: Text("Top 50")) {
-                                ForEach(filterListData) { item in
-                                    NavigationLink(value: item) {
-                                        CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
-                                    }
+                            .navigationDestination(for: CryptoData.self) { item in
+                                CryptoDetailView(isFav: isFav(id: item.id ?? ""), item: item)
+                            }
+                            .navigationTitle("Crypto Tracker")
+                            .toolbar {
+                                ToolbarItem {
+                                    Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
+                                        .font(.title2)
+                                        .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
                                 }
                             }
-                        }
-                        .navigationDestination(for: CryptoData.self) { item in
-                            CryptoDetailView(isFav: isFav(id: item.id ?? ""), item: item)
-                        }
-                        .navigationTitle("Crypto Tracker")
-                        .toolbar {
-                            ToolbarItem {
-                                Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
-                                    .font(.title2)
-                                    .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
+                            .listStyle(.grouped)
+                            .searchable(text: $searchText)
+                            .refreshable {
+                                viewModel.apply()
                             }
-                        }
-                        .listStyle(.grouped)
-                        .searchable(text: $searchText)
-                        .refreshable {
-                            viewModel.apply()
                         }
                     }
                 }
             }
-        }
-        .onAppear {
-            viewModel.apply()
-        }
-        .onChange(of: newtworkMonitor.isConnected) { _, isConnected in
-            if isConnected {
-                Logger.cryptoTrack.info("Retry network request")
+            .onChange(of: newtworkMonitor.isConnected, initial: true) {
+                if newtworkMonitor.isConnected {
+                    Logger.cryptoTrack.info("Retry network request")
+                    viewModel.apply()
+                }
+            }
+        } else {
+            VStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    if viewModel.cryptoList.isEmpty {
+                        Text("Content unavailable")
+                            .font(.title)
+                    } else {
+                        NavigationView {
+                            CryptoListTableViewWrapper(vm: viewModel)
+                        }
+                    }
+                }
+            }
+            .onAppear {
                 viewModel.apply()
             }
         }
@@ -102,8 +119,8 @@ struct ContentView: View {
 }
 
 #Preview {
-    NavigationStack {
+    NavigationView {
         ContentView(viewModel: CryptoListViewModel())
-            .environment(NetworkMonitor())
+            .environmentObject(NetworkMonitor())
     }
 }

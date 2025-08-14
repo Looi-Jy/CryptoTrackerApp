@@ -14,20 +14,18 @@ protocol FetchCryptoListProtocol {
 
 final class FetchCryptoListUseCase: FetchCryptoListProtocol {
     @Injected var cryptoListProtocol: CryptoListProtocol
-//    @Injected var dataController: DataController
     
     func execute(request: CryptoListRequest) async throws -> [CryptoData] {
-        //TODO: get data from network or cache
         do {
             let response = try await self.cryptoListProtocol.fetchCryptoList(request: request)
             //Save to core data
-            DataController.shared.deleteAllRecords(entityName: "Crypto")
             guard let cryptos = response?.data else { return [] }
+            DataController.shared.deleteAllRecords(entityName: "Crypto")
             for crypto in cryptos {
                 DataController.shared.addNewCrypto(item: crypto)
             }
             DataController.shared.saveContext()
-            
+
             return cryptos
         } catch {
             //Retrive from core data
@@ -48,7 +46,6 @@ final class FetchCryptoListUseCase: FetchCryptoListProtocol {
                 )
                 return crypto
             }
-            
 //            Logger.cryptoTrack.info("data: \(cryptos, privacy: .public)")
             
             return cryptoList

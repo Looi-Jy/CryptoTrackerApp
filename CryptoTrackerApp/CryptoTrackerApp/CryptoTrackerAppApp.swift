@@ -9,19 +9,19 @@ import SwiftUI
 
 @main
 struct CryptoTrackerAppApp: App {
-    @State private var networkMonitor = NetworkMonitor()
+    @StateObject private var networkMonitor = NetworkMonitor()
     @StateObject private var dataController  = DataController.shared
     
     init() {
         Resolver.register(NetworkService() as NetworkServiceType)
         Resolver.register(CryptoListRepo() as CryptoListProtocol)
-        Resolver.register(FetchCryptoListUseCase() as FetchCryptoListUseCase)
+        Resolver.register(FetchCryptoListUseCase() as FetchCryptoListProtocol)
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(networkMonitor)
+                .environmentObject(networkMonitor)
                 .environment(\.managedObjectContext, dataController.container.viewContext)
         }
     }

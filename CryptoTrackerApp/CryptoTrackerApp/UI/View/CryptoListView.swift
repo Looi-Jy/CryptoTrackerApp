@@ -23,7 +23,8 @@ struct CryptoListView: View {
             
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.name ?? "")
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(2)
+//                    .fixedSize(horizontal: false, vertical: true)
                     .frame(width: 80, alignment: .leading)
                 Text(item.symbol ?? "")
             }
