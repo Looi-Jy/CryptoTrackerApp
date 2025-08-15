@@ -21,7 +21,7 @@ struct FavouriteButton: View {
             vm.addRemoveFav(isFav: isFav, id: id, name: item.name ?? "", symbol: item.symbol ?? "")
         }) {
             Image(systemName: isFav ? "heart.fill" : "heart")
-                .font(.title2)
+                .font(.headline)
                 .foregroundColor(isFav ? .red : .primary)
         }
     }
