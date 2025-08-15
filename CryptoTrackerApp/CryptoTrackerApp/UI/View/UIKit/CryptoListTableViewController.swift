@@ -26,16 +26,10 @@ final class CryptoListTableViewController: UITableViewController {
     }
     
     private var filterFavListData: [CryptoData] {
-        guard let searchText = searchController.searchBar.text, !searchText.isEmpty else { return favListData }
-        return favListData.filter {
+        guard let searchText = searchController.searchBar.text, !searchText.isEmpty else { return viewModel.favCryptoList }
+        return viewModel.favCryptoList.filter {
             $0.name?.localizedCaseInsensitiveContains(searchText) ?? false
         }
-    }
-    
-    private var favListData: [CryptoData] {
-        let favList = DataController.shared.fetchFavourite()
-        let favId = favList.map { $0.id }
-        return viewModel.cryptoList.filter({ favId.contains($0.id) })
     }
     
     private var sectionData: [[CryptoData]] {
@@ -51,11 +45,6 @@ final class CryptoListTableViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tableReload()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Crypto Track"
@@ -66,6 +55,18 @@ final class CryptoListTableViewController: UITableViewController {
         setNetworkButton()
         setNetworkButton()
         binding()
+        bindViewModel()
+    }
+    
+    private func bindViewModel() {
+        Publishers.CombineLatest(viewModel.$cryptoList, viewModel.$favCryptoList)
+            .dropFirst()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] list in
+                guard let self else { return }
+                self.tableReload()
+            })
+            .store(in: &self.cancellables)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -93,18 +94,10 @@ final class CryptoListTableViewController: UITableViewController {
         getIsFav(item: item)
         cell?.tap = { [weak self] in
             guard let self else { return }
-            getIsFav(item: item)
+            self.getIsFav(item: item)
             self.isFav.toggle()
             guard let id = item.id else { return }
-            if self.isFav {
-                //add to favouriste list
-                DataController.shared.addFavourite(id: id, name: item.name ?? "", symbol: item.symbol ?? "")
-                DataController.shared.saveContext()
-            } else {
-                //remove from favourite list
-                DataController.shared.removeFavourite(id: id)
-            }
-            tableReload()
+            self.viewModel.addRemoveFav(isFav: self.isFav, id: id, name: item.name ?? "", symbol: item.symbol ?? "")
         }
         setButtonImage(button: cell?.favButton, isFav: isFav)
 
@@ -112,7 +105,7 @@ final class CryptoListTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let detailview = CryptoDetailView(isFav: isFav, item: sectionData[indexPath.section][indexPath.row])
+        let detailview = CryptoDetailView(/*isFav: isFav, */item: sectionData[indexPath.section][indexPath.row], vm: viewModel)
         let hostingController = UIHostingController(rootView: detailview)
         
         self.navigationController?.pushViewController(hostingController, animated: true)
@@ -153,7 +146,6 @@ extension CryptoListTableViewController: UISearchResultsUpdating {
     @objc private func refreshData(_ sender: UIRefreshControl) {
         Task {
             try await viewModel.asyncApply()
-            tableReload()
             sender.endRefreshing()
         }
     }
@@ -171,7 +163,6 @@ extension CryptoListTableViewController: UISearchResultsUpdating {
                     Task {
                         Logger.cryptoTrack.info("Retry network request")
                         try? await self?.viewModel.asyncApply()
-                        self?.tableReload()
                     }
                 }
             })

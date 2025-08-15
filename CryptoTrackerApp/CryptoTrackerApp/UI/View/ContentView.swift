@@ -26,16 +26,11 @@ struct ContentView: View {
     
     private var filterFavListData: [CryptoData] {
         if searchText.isEmpty {
-            return favListData
+            return viewModel.favCryptoList
         }
-        return favListData.filter {
+        return viewModel.favCryptoList.filter {
             $0.name?.localizedCaseInsensitiveContains(searchText) ?? false
         }
-    }
-    
-    private var favListData: [CryptoData] {
-        let favId = Set(favCryptos.map { $0.id })
-        return viewModel.cryptoList.filter({ favId.contains($0.id) })
     }
     
     var body: some View {
@@ -53,7 +48,7 @@ struct ContentView: View {
                                     Section(header: Text("Favourite")) {
                                         ForEach(filterFavListData) { item in
                                             NavigationLink(value: item) {
-                                                CryptoListView(isFav: true, item: item)
+                                                CryptoListView(item: item, vm: viewModel)
                                             }
                                         }
                                     }
@@ -61,13 +56,13 @@ struct ContentView: View {
                                 Section(header: Text("Top 50")) {
                                     ForEach(filterListData) { item in
                                         NavigationLink(value: item) {
-                                            CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
+                                            CryptoListView(item: item, vm: viewModel)
                                         }
                                     }
                                 }
                             }
                             .navigationDestination(for: CryptoData.self) { item in
-                                CryptoDetailView(isFav: isFav(id: item.id ?? ""), item: item)
+                                CryptoDetailView(item: item, vm: viewModel)
                             }
                             .navigationTitle("Crypto Tracker")
                             .toolbar {
@@ -114,10 +109,6 @@ struct ContentView: View {
                 viewModel.apply()
             }
         }
-    }
-    
-    private func isFav(id: String) -> Bool {
-        return favCryptos.filter({ $0.id == id }).first != nil
     }
 }
 

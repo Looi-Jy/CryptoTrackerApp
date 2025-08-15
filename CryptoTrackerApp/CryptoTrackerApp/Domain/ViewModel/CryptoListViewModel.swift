@@ -38,10 +38,12 @@ final class CryptoListViewModel: ObservableObject {
             "page": "1"
         ]
         self.cryptoList = try await self.getCryptoList()
+        self.updateFavList()
     }
     
     // MARK: Output
     @Published private(set) var cryptoList: [CryptoData] = []
+    @Published var favCryptoList: [CryptoData] = []
     
     public func getCryptoList() async throws -> [CryptoData] {
         isLoading = true
@@ -54,4 +56,23 @@ final class CryptoListViewModel: ObservableObject {
             return []
         }
     }
+    
+    private func updateFavList() {
+        let favList = DataController.shared.fetchFavourite()
+        let favIds = favList.map { $0.id }
+        favCryptoList = cryptoList.filter { favIds.contains($0.id) }
+    }
+    
+    func addRemoveFav(isFav: Bool, id: String, name: String, symbol: String) {
+        if isFav {
+            //add to favouriste list
+            DataController.shared.addFavourite(id: id, name: name , symbol: symbol)
+            DataController.shared.saveContext()
+        } else {
+            //remove from favourite list
+            DataController.shared.removeFavourite(id: id)
+        }
+        updateFavList()
+    }
+    
 }

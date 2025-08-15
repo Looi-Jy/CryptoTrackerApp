@@ -10,36 +10,15 @@ import SwiftUI
 struct FavouriteButton: View {
     @Environment(\.managedObjectContext) var moc
     @FetchRequest(sortDescriptors: []) var favCryptos: FetchedResults<FavCrypto>
-    @State private var isFav: Bool = false
     var item: CryptoData
-    
-    init(isFavourite: Bool, item: CryptoData) {
-        _isFav = State(initialValue: isFavourite)
-        self.item = item
-    }
+    var vm: CryptoListViewModel
     
     var body: some View {
+        var isFav = favCryptos.filter({ $0.id == item.id }).first != nil
         Button(action: {
             isFav.toggle()
-            if isFav {
-                //add to favouriste list
-                if let id = item.id, favCryptos.filter({ $0.id == id }).first == nil {
-                    let fav = FavCrypto(context: moc)
-                    fav.id = id
-                    fav.name = item.name
-                    fav.symbol = item.symbol
-                    fav.dateAdded = Date()
-                    
-                    try? moc.save()
-                }
-            } else {
-                //remove from favourite list
-                if let fav = favCryptos.filter({ $0.id == item.id }).first {
-                    moc.delete(fav)
-                    
-                    try? moc.save()
-                }
-            }
+            guard let id = item.id else { return }
+            vm.addRemoveFav(isFav: isFav, id: id, name: item.name ?? "", symbol: item.symbol ?? "")
         }) {
             Image(systemName: isFav ? "heart.fill" : "heart")
                 .font(.title2)
@@ -50,7 +29,7 @@ struct FavouriteButton: View {
 
 #Preview {
     FavouriteButton(
-        isFavourite: true,
-        item: CryptoData.sampleCryptoData
+        item: CryptoData.sampleCryptoData,
+        vm: CryptoListViewModel()
     )
 }

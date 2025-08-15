@@ -8,8 +8,8 @@ import SwiftUI
 
 struct CryptoDetailView: View {
     @EnvironmentObject private var newtworkMonitor: NetworkMonitor
-    var isFav: Bool
     var item: CryptoData
+    var vm: CryptoListViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -58,7 +58,7 @@ struct CryptoDetailView: View {
                         .font(.headline)
                         .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
                     
-                    FavouriteButton(isFavourite: isFav, item: item)
+                    FavouriteButton(item: item, vm: vm)
                 }
             }
         }
@@ -68,8 +68,8 @@ struct CryptoDetailView: View {
 #Preview {
     NavigationView {
         CryptoDetailView(
-            isFav: false,
-            item: CryptoData.sampleCryptoData
+            item: CryptoData.sampleCryptoData,
+            vm: CryptoListViewModel()
         ).environmentObject(NetworkMonitor())
     }
 }

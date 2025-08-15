@@ -7,8 +7,8 @@
 import SwiftUI
 
 struct CryptoListView: View {
-    var isFav: Bool = false
     var item: CryptoData
+    var vm: CryptoListViewModel
     
     var body: some View {
         HStack(spacing: 8) {
@@ -38,7 +38,7 @@ struct CryptoListView: View {
             Text(String(format: "%.2f", priceChange) + "%")
                 .modifier(priceChangeText(priceChange: priceChange))
             
-            FavouriteButton(isFavourite: isFav, item: item)
+            FavouriteButton(item: item, vm: vm)
                 .buttonStyle(.borderless)
         }
     }
