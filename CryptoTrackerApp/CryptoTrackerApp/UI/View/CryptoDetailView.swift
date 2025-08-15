@@ -55,7 +55,7 @@ struct CryptoDetailView: View {
             ToolbarItem {
                 HStack {
                     Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
-                        .font(.title2)
+                        .font(.headline)
                         .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
                     
                     FavouriteButton(isFavourite: isFav, item: item)

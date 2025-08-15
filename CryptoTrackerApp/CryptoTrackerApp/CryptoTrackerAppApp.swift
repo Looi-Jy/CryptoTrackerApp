@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct CryptoTrackerAppApp: App {
-    @StateObject private var networkMonitor = NetworkMonitor()
+    @StateObject private var networkMonitor = NetworkMonitor.shared
     @StateObject private var dataController  = DataController.shared
     
     init() {

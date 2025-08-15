@@ -53,7 +53,7 @@ struct ContentView: View {
                                     Section(header: Text("Favourite")) {
                                         ForEach(filterFavListData) { item in
                                             NavigationLink(value: item) {
-                                                CryptoListView(isFav: isFav(id: item.id ?? ""), item: item)
+                                                CryptoListView(isFav: true, item: item)
                                             }
                                         }
                                     }
@@ -73,7 +73,7 @@ struct ContentView: View {
                             .toolbar {
                                 ToolbarItem {
                                     Image(systemName: newtworkMonitor.isConnected ? "wifi" : "wifi.slash")
-                                        .font(.title2)
+                                        .font(.headline)
                                         .foregroundStyle(newtworkMonitor.isConnected ? .green : .red)
                                 }
                             }
@@ -98,12 +98,15 @@ struct ContentView: View {
                     ProgressView()
                 } else {
                     if viewModel.cryptoList.isEmpty {
-                        Text("Content unavailable")
-                            .font(.title)
-                    } else {
-                        NavigationView {
-                            CryptoListTableViewWrapper(vm: viewModel)
+                        VStack(spacing: 15) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.largeTitle)
+                                .foregroundColor(.primary)
+                            Text("Content unavailable")
+                                .font(.title)
                         }
+                    } else {
+                        CryptoListTableViewWrapper(vm: viewModel)
                     }
                 }
             }

@@ -25,16 +25,19 @@ final class CryptoListViewModel: ObservableObject {
     
     // MARK: Input
     func apply() {
+        Task {
+            try await asyncApply()
+        }
+    }
+    
+    func asyncApply() async throws {
         self.request.params = [
             "vs_currency": "usd",
             "order": "market_cap_desc",
             "per_page": "50",
             "page": "1"
         ]
-        
-        Task {
-            self.cryptoList = try await self.getCryptoList()
-        }
+        self.cryptoList = try await self.getCryptoList()
     }
     
     // MARK: Output

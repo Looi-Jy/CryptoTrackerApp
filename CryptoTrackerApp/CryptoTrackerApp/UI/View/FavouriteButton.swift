@@ -23,7 +23,7 @@ struct FavouriteButton: View {
             isFav.toggle()
             if isFav {
                 //add to favouriste list
-                if let id = item.id {
+                if let id = item.id, favCryptos.filter({ $0.id == id }).first == nil {
                     let fav = FavCrypto(context: moc)
                     fav.id = id
                     fav.name = item.name
