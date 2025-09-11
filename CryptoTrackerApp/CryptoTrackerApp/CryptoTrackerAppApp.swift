@@ -16,6 +16,8 @@ struct CryptoTrackerAppApp: App {
         Resolver.register(NetworkService() as NetworkServiceType)
         Resolver.register(CryptoListRepo() as CryptoListProtocol)
         Resolver.register(FetchCryptoListUseCase() as FetchCryptoListProtocol)
+        Resolver.register(CryptoDetailsRepo() as CryptoDetailsProtocol)
+        Resolver.register(FetchCryptoDetailsUseCase() as FetchCryptoDetailsProtocol)
     }
     
     var body: some Scene {

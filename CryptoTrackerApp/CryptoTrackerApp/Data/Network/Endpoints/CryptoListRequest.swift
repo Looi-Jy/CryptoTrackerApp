@@ -6,7 +6,7 @@
 //
 import Foundation
 
-class CryptoListRequest: NetworkRequestType {
+final class CryptoListRequest: NetworkRequestType {
     
     typealias Response = CryptoList
     

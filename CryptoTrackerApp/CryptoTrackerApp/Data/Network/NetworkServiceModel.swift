@@ -27,7 +27,6 @@ protocol NetworkRequestType {
 }
 
 extension NetworkRequestType {
-    
     func getQueryItems() -> [URLQueryItem]? {
         return self.params.map {
             URLQueryItem(name: $0.0, value: $0.1 as? String)

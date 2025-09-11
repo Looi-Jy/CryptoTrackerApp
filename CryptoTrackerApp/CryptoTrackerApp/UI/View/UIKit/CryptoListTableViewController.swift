@@ -105,7 +105,8 @@ final class CryptoListTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let detailview = CryptoDetailView(/*isFav: isFav, */item: sectionData[indexPath.section][indexPath.row], vm: viewModel)
+        let id = sectionData[indexPath.section][indexPath.row].id ?? ""
+        let detailview = CryptoDetailView(item: sectionData[indexPath.section][indexPath.row], vm: viewModel, cryptoDetailsViewModel: CryptoDetailsViewModel(id: id))
         let hostingController = UIHostingController(rootView: detailview)
         
         self.navigationController?.pushViewController(hostingController, animated: true)

@@ -11,7 +11,7 @@ import OSLog
 @MainActor
 final class CryptoListViewModel: ObservableObject {
     @Injected var getCryptoListUsecase: FetchCryptoListProtocol
-    private var request: CryptoListRequest = {
+    private lazy var request: CryptoListRequest = {
         return CryptoListRequest()
     }()
     

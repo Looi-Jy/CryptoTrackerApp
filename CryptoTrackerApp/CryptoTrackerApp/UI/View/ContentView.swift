@@ -62,7 +62,7 @@ struct ContentView: View {
                                 }
                             }
                             .navigationDestination(for: CryptoData.self) { item in
-                                CryptoDetailView(item: item, vm: viewModel)
+                                CryptoDetailView(item: item, vm: viewModel, cryptoDetailsViewModel: CryptoDetailsViewModel(id: item.id ?? ""))
                             }
                             .navigationTitle("Crypto Tracker")
                             .toolbar {
