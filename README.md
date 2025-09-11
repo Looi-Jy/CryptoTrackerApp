@@ -11,8 +11,7 @@ Domain – Contains models, view models, and use cases.
 UI – Includes all SwiftUI and UIKit views.
 
 Below is a simplified architecture diagram.
-
-<img width="904" height="617" alt="Diagram" src="https://github.com/user-attachments/assets/4511d352-dc0a-4e40-b4cc-5d34cc99a9fe" />
+<img width="1044" height="423" alt="Screenshot 2025-09-09 at 9 30 45 PM" src="https://github.com/user-attachments/assets/e726b1bd-d59e-4719-9607-67071167cc01" />
 
 
 # Features implemented
